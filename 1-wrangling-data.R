@@ -26,18 +26,27 @@ location <- tribble(
 
 #.....................clean lobster_raw data.....................
 lobs_clean <- lobsters_raw |> 
+  
+  # clean col names & replace missing values with NA
   clean_names() |> 
   replace_with_na(replace = list(size_mm = -99999)) |> 
+  
+  # add col for site protection status
   mutate(protection_status = case_when(
     site == "AQUE" ~ "non-MPA",
     site == "NAPL" ~ "MPA",
     site == "IVEE" ~ "MPA",
     site == "MOHK" ~ "non-MPA",
     site == "CARP" ~ "non-MPA",
-  ))
+  )) 
 
 #.............combine lobster data and location data.............
-lobs_loc <- full_join(lobs_clean, location)
+lobs_loc <- full_join(lobs_clean, location) |> 
+  
+  # reorder factors for plotting (done here and not in last step above bc joining datasets on `site` coerces site back to character)
+  mutate(site = as.factor(site),
+         protection_status = fct_relevel(protection_status, "MPA", "non-MPA"),
+         site = fct_relevel(site, "NAPL", "IVEE", "AQUE", "MOHK", "CARP"))
 
 #..........................save as RDS...........................
 saveRDS(lobs_loc, file = here("data", "lobsters_locations.rds"))
