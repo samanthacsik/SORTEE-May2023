@@ -1,25 +1,40 @@
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+##                            Create a static plot                          ----
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#.........................load libraries.........................
 library(tidyverse)
-library(naniar)
-library(janitor)
 
+#..........................read in data..........................
+lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
 
-lobs_clean <- lobsters |> 
-  clean_names() |> 
-  replace_with_na(replace = list(size_mm = -99999)) %>% 
-  mutate(mpa_status = case_when(
-    site == "NAPL" ~ "MPA",
-    site == "IVEE" ~ "MPA",
-    site == "AQUE" ~ "non-MPA",
-    site == "MOHK" ~ "non-MPA",
-    site == "CARP" ~ "non-MPA"
-  ), 
-  mpa_status = fct_relevel(mpa_status, "MPA", "non-MPA")) %>% 
-  mutate(site = fct_relevel(site, "NAPL", "IVEE", "AQUE", "MOHK", "CARP"))
-
-
-lobs_clean %>% 
-  group_by(mpa_status, site, year) %>% 
+#.........................create boxplot.........................
+lobs %>% 
+  
+  # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
+  group_by(protection_status, site, year) %>% 
   count() %>% 
-  ggplot(aes(x = mpa_status, y = n)) +
-  geom_boxplot(width = 0.15, outlier.shape = NA) +
-  geom_jitter(width = 0.1, aes(color = site))
+  
+  # create boxplot of mpa vs non-mpa lobster counts ----
+  ggplot(aes(x = protection_status, y = n)) +
+  geom_boxplot(width = 0.5, outlier.shape = NA) +
+  geom_jitter(width = 0.25, size = 4, alpha = 0.8, aes(color = site, shape = site)) +
+  
+  # update colors ----
+  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
+  
+  # update labels
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
+  
+  # theme ----
+  theme_linedraw() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 13),
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 11))
+   
