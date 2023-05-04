@@ -38,7 +38,10 @@ lobs_clean <- lobsters_raw |>
     site == "IVEE" ~ "MPA",
     site == "MOHK" ~ "non-MPA",
     site == "CARP" ~ "non-MPA",
-  )) 
+  )) |> 
+  
+  # add column with total lobs per observation
+  mutate(total_count = count + num_ao) 
 
 #.............combine lobster data and location data.............
 lobs_loc <- full_join(lobs_clean, location) |> 
@@ -46,10 +49,18 @@ lobs_loc <- full_join(lobs_clean, location) |>
   # reorder factors for plotting (done here and not in last step above bc joining datasets on `site` coerces site back to character)
   mutate(site = as.factor(site),
          protection_status = fct_relevel(protection_status, "MPA", "non-MPA"),
-         site = fct_relevel(site, "NAPL", "IVEE", "AQUE", "MOHK", "CARP"))
+         site = fct_relevel(site, "NAPL", "IVEE", "AQUE", "MOHK", "CARP")) |> 
+  
+  # select/rearrange desired cols
+  select(year, date, site, protection_status, transect, replicate, size_mm, total_count, lat, lon)
 
 #..........................save as RDS...........................
 saveRDS(lobs_loc, file = here("data", "lobsters_locations.rds"))
 
 #..............................test..............................
 test <- readRDS(file = here("data", "lobsters_locations.rds"))
+
+
+
+
+
