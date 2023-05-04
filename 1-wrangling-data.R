@@ -27,7 +27,14 @@ location <- tribble(
 #.....................clean lobster_raw data.....................
 lobs_clean <- lobsters_raw |> 
   clean_names() |> 
-  replace_with_na(replace = list(size_mm = -99999)) 
+  replace_with_na(replace = list(size_mm = -99999)) |> 
+  mutate(protection_status = case_when(
+    site == "AQUE" ~ "non-MPA",
+    site == "NAPL" ~ "MPA",
+    site == "IVEE" ~ "MPA",
+    site == "MOHK" ~ "non-MPA",
+    site == "CARP" ~ "non-MPA",
+  ))
 
 #.............combine lobster data and location data.............
 lobs_loc <- full_join(lobs_clean, location)
