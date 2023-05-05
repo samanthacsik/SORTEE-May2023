@@ -7,14 +7,26 @@
 library(tidyverse)
 
 #..........................read in data..........................
+
 lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
 
-#.........................create boxplot.........................
-lobs %>% 
+#.............................wrangle............................
+
+# creating new data frame
+lobs_summary <- lobs %>% 
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
-  group_by(protection_status, site, year) %>% 
+group_by(protection_status, site, year) %>% 
   count() %>% 
+  
+  # create a new column called "marker" - this will show up later! ----
+  mutate(marker = paste("Site:", site, "<br>",
+                        "Year:", year, "<br>",
+                        "Status:", protection_status, "<br>",
+                        "Lobster count:", n))
+
+#.........................create boxplot.........................
+static <- lobs_summary %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
   ggplot(aes(x = protection_status, y = n)) +
@@ -37,4 +49,6 @@ lobs %>%
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
+
+static
    
