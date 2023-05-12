@@ -17,13 +17,7 @@ lobs_summary <- lobs %>%
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
   group_by(protection_status, site, year) %>% 
-  count() %>% 
-  
-  # create a new column called "marker" - this will show up later! ----
-  mutate(marker = paste("Site:", site, "<br>",
-                      "Year:", year, "<br>",
-                      "Status:", protection_status, "<br>",
-                      "Lobster count:", n))
+  count() 
 
 #.........................create boxplot.........................
 static <- lobs_summary %>% 
