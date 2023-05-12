@@ -13,4 +13,12 @@ lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
 datatable(data = lobs)
 
 #................customize your interactive table................
-datatable(data = lobs)
+datatable(data = lobs, 
+          colnames = c("Year", "Date", "Site", "Protection status", "Transect", "Replicate", 
+                       "Size (mm)", "Count", "Latitude", "Longitude"),
+          filter = "top", 
+          options = list(
+            pageLength = 10, 
+            autoWidth = TRUE,
+            searchHighlight = TRUE
+          ))
