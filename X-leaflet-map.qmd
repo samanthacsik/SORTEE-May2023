@@ -1,0 +1,30 @@
+---
+title: "Something"
+subtitle: "something else"
+authors: 
+  - name: Sam Csik
+    affiliation: National Center for Ecological Analysis and Synthesis
+  - name: An Bui
+    affiliation: University of California, Santa Barbara
+---
+
+## Load libraries & data
+```{r}
+#.........................load libraries.........................
+library(leaflet)
+library(tidyverse)
+
+#..........................read in data..........................
+lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
+
+```
+
+## Wrangle data for plotting
+```{r}
+#..................get unique site/location data.................
+sites <- lobs |> 
+  select(site, protection_status, lat, lon) |> 
+  distinct()
+  
+```
+
