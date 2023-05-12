@@ -48,5 +48,8 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
+# .DS_Store
+.DS_Store
+
 # ignore original data file
-data/Lobster_Abundance_All_Years_20220829.csv
+data/*.csv
