@@ -17,7 +17,7 @@ lobs_summary <- lobs %>%
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
   group_by(protection_status, site, year) %>% 
-  count() 
+  count()
 
 #.........................create boxplot.........................
 static <- lobs_summary %>% 
@@ -30,7 +30,11 @@ static <- lobs_summary %>%
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
   # update colors ----
-  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  scale_color_manual(values = c("NAPL" = "#91B38A", 
+                                "IVEE" = "#9565CC", 
+                                "AQUE" = "#CCC065", 
+                                "MOHK" = "#658ACC", 
+                                "CARP" = "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
