@@ -48,15 +48,15 @@ site_map <- leaflet() |>
   addMarkers(data = mpa, group = "MPA Sites",
              icon = lobster_icon,
              lng = ~lon, lat = ~lat,
-             popup = paste("Site Name:", sites$site, "<br>",
-                           "Coorinates (lat/long):", sites$lat, ",", sites$lon)) |>
+             popup = paste("Site Name:", mpa$site, "<br>",
+                           "Coorinates (lat/long):", mpa$lat, ",", mpa$lon)) |>
   
   # add non-MPA markers ----
   addMarkers(data = non_mpa, group = "Non-MPA Sites",
              icon = lobster_icon,
              lng = ~lon, lat = ~lat,
-             popup = paste("Site Name:", sites$site, "<br>",
-                           "Coorinates (lat/long):", sites$lat, ",", sites$lon)) |>
+             popup = paste("Site Name:", non_mpa$site, "<br>",
+                           "Coorinates (lat/long):", non_mpa$lat, ",", non_mpa$lon)) |>
 
   # add layers control (toggle base map tiles & markers based on group IDs) ----
   addLayersControl(
