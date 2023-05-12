@@ -38,37 +38,36 @@ site_map <- leaflet() |>
   addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") |> # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
   addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") |> 
   
-  # add mini map
+  # add mini map ----
   addMiniMap(toggleDisplay = TRUE, minimized = TRUE) |> 
   
   # set view over Santa Barbara Channel ----
   setView(lng =  -119.83, lat = 34.44, zoom = 9) |> 
   
-  # add MPA markers
+  # add MPA markers ----
   addMarkers(data = mpa, group = "MPA Sites",
              icon = lobster_icon,
              lng = ~lon, lat = ~lat,
              popup = paste("Site Name:", sites$site, "<br>",
                            "Coorinates (lat/long):", sites$lat, ",", sites$lon)) |>
   
-  # add non-MPA markers
+  # add non-MPA markers ----
   addMarkers(data = non_mpa, group = "Non-MPA Sites",
              icon = lobster_icon,
              lng = ~lon, lat = ~lat,
              popup = paste("Site Name:", sites$site, "<br>",
                            "Coorinates (lat/long):", sites$lat, ",", sites$lon)) |>
 
-  # add layers control (toggle base map tiles & markers based on group IDs)
+  # add layers control (toggle base map tiles & markers based on group IDs) ----
   addLayersControl(
     baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
-    overlayGroups = c("MPA Sites", "Non-MPA Sites")
-    
-  ) |> 
+    overlayGroups = c("MPA Sites", "Non-MPA Sites")) |> 
   
-  # add reset map button
+  # add reset map button ----
   leaflet.extras::addResetMapButton()
                    
 
+# print map ----
 site_map
 
 #............................save html...........................
