@@ -17,7 +17,15 @@ ggplotly(static)
 
 # but we want to make this better!
 
-static_with_marker <- lobs_summary %>% 
+lobs_summary_marker <- lobs_summary %>% 
+  
+  # create a new column called "marker" ----
+  mutate(marker = paste("Site:", site, "<br>",
+                      "Year:", year, "<br>",
+                      "Status:", protection_status, "<br>",
+                      "Lobster count:", n))
+
+static_with_marker <- lobs_summary_marker %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
   ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
@@ -45,9 +53,33 @@ static_with_marker <- lobs_summary %>%
 # running the ggplot object will give you a scary warning - that's ok!
 static_with_marker
 
-ggplotly(static_with_marker, tooltip = "text")
+interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
+  layout(hoverlabel = list(
+    font = list(
+      family = "Times",
+      size = 13,
+      color = "#FFFFFF",
+      align = "left"
+    )
+  ))
 
+fig <- plotly_build(interactive)
 
+fig
+
+# doing it in plot_ly:
+
+# plot_ly(ggplot2::diamonds, y = ~price, color = ~cut, type = "box")
+
+plot_ly(lobs_summary_marker, 
+        y = ~ n,
+        color = ~ protection_status,
+        type = "box",
+        boxpoints = "all",
+        pointpos = 0,
+        jitter = 0.25,
+        hoverinfo = "text", 
+        text = ~ marker) 
 
 
 
