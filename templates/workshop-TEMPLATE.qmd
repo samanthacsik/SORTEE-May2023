@@ -1,0 +1,188 @@
+---
+title: "Integrating JavaScript Libraries into R for Dynamic Visualizations"
+author: "your name here"
+date: May 23, 2023
+execute:
+  message: false
+  warning: false
+format:
+  html:
+    toc: true
+    toc-location: left
+    theme: sandstone
+---
+
+# 0. Setting up
+
+```{r libraries-and-data}
+library(tidyverse) # general use
+library(plotly) # JS plots!
+library(DT) # JS tables!
+library(leaflet) # JS maps!
+library(leaflet.extras) # leaflet add-ons!
+
+# reading in the RDS (saved data object)
+lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
+```
+
+# 1. Summarizing the data
+
+```{r creating-lobs-summary}
+# creating new data frame
+lobs_summary <- lobs %>% 
+  
+  # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
+  group_by(protection_status, site, year) %>% 
+  count()
+```
+
+# 2. `plotly`
+
+## a. create a static plot
+
+```{r static-boxplot}
+static <- lobs_summary %>% 
+  
+  # create boxplot of mpa vs non-mpa lobster counts ----
+  ggplot(aes(x = protection_status, y = n)) +
+  
+  # geoms: a boxplot and points with jitter
+  geom_boxplot(width = 0.5, outlier.shape = NA) +
+  geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
+             # turn the points into a jitter (with a little more control than geom_jitter)
+             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
+  
+  # update colors ----
+  scale_color_manual(values = c("NAPL" = "#91B38A", 
+                                "IVEE" = "#9565CC", 
+                                "AQUE" = "#CCC065", 
+                                "MOHK" = "#658ACC", 
+                                "CARP" = "#CC6565")) +
+  scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
+  
+  # update labels ----
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
+  
+  # theme ----
+  theme_linedraw() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 13),
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 11))
+
+static
+```
+
+## b. create an interactive plot
+
+```{r basic-interactive-plot}
+
+```
+
+## c. create a better interactive plot
+
+### i. create a marker
+
+```{r summary-marker-df}
+
+```
+
+### ii. make a new static plot with `text = marker` aesthetic argument
+
+```{r new-static-plot, warning = TRUE}
+# creating a new static plot
+static_with_marker <- lobs_summary_marker %>% 
+  
+  # create boxplot of mpa vs non-mpa lobster counts ----
+  ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
+  
+  # geoms: boxplot and jitter
+  geom_boxplot(width = 0.5, outlier.shape = NA) +
+  geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
+             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
+  
+  # update colors ----
+  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
+  
+  # update labels ----
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
+  
+  # theme ----
+  theme_linedraw() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 13),
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 11))
+
+# running the ggplot object will give you a scary warning - that's ok!
+static_with_marker
+```
+
+### iii. create plot with markers
+
+```{r better-interactive-plot}
+
+```
+
+### iv. doing things in `plot_ly`
+
+```{r doing-in-plotly}
+
+```
+
+# 3. `DT`
+
+## a. create a basic interactive table
+
+```{r basic-DT}
+
+```
+
+## b. customizing your DT
+
+```{r advanced-DT}
+
+```
+
+# 4. `leaflet`
+
+## a. some cleaning and filtering
+
+```{r unique-sites}
+sites <- lobs |> 
+  select(site, protection_status, lat, lon) |> 
+  distinct()
+
+mpa <- sites |> 
+  filter(protection_status == "MPA")
+
+non_mpa <- sites |> 
+  filter(protection_status == "non-MPA")
+```
+
+## b. create a custom icon
+
+```{r lobster-icon}
+
+```
+
+## c. create a map!
+
+```{r leaflet-map}
+
+```
+
+## d. saving the html objects
+
+```{r saving-map, eval = FALSE}
+htmltools::save_html(lobs_interactive, here::here("outputs", "plotly.html"))
+htmltools::save_html(lobs_dt, here::here("outputs", "dt.html"))
+htmltools::save_html(site_map, here::here("outputs", "leaflet.html"))
+```
