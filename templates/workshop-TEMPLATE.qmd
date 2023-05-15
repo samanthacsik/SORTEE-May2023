@@ -22,7 +22,7 @@ library(leaflet) # JS maps!
 library(leaflet.extras) # leaflet add-ons!
 
 # reading in the RDS (saved data object)
-lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
+lobs <- readRDS(file = here::here("data", "lobsters.rds"))
 ```
 
 # 1. Summarizing the data
@@ -73,6 +73,7 @@ static <- lobs_summary %>%
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
+# print plot ----
 static
 ```
 
@@ -156,14 +157,17 @@ static_with_marker
 ## a. some cleaning and filtering
 
 ```{r unique-sites}
-sites <- lobs |> 
-  select(site, protection_status, lat, lon) |> 
+# create df of unique sites ----
+sites <- lobs %>% 
+  select(site, protection_status, lat, lon) %>% 
   distinct()
 
-mpa <- sites |> 
+# just mpa sites ----
+mpa <- sites %>% 
   filter(protection_status == "MPA")
 
-non_mpa <- sites |> 
+# just non-mpa sites ----
+non_mpa <- sites %>% 
   filter(protection_status == "non-MPA")
 ```
 
@@ -179,7 +183,7 @@ non_mpa <- sites |>
 
 ```
 
-## d. saving the html objects
+# 4. saving the html objects
 
 ```{r saving-map, eval = FALSE}
 htmltools::save_html(lobs_interactive, here::here("outputs", "plotly.html"))

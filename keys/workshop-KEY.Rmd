@@ -6,6 +6,7 @@ output:
   html_document:
     toc: true
     toc_float: true
+    theme: sandstone
 ---
 
 ```{r setup, include=FALSE}
@@ -14,20 +15,22 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 # 0. Setting up
 
-```{r libraries-and-data}
-library(tidyverse) # general use
+```{r libraries-and-data, eval = TRUE, echo = TRUE, warning = FALSE, message = FALSE}
+library(tidyverse) # data wrangling & viz (with {ggplot2})
 library(plotly) # JS plots!
 library(DT) # JS tables!
 library(leaflet) # JS maps!
 library(leaflet.extras) # leaflet add-ons!
 
 # reading in the RDS (saved data object)
-lobs <- readRDS(file = here::here("data", "lobsters_locations.rds"))
+lobs <- readRDS(file = here::here("data", "lobsters.rds"))
 ```
+
+**Note:** RDS (R Data Serialization) is a data file format commonly used for saving R objects. RDS files are relatively small, take less time to import/export, and preserve data types and classes (e.g. factors and dates), eliminating the need to redefine data types after loading the file. We've done some pre-processing of the original/raw data and wrote it out as an `.rds` file (using `saveRDS()`) for us to use in this workshop.
 
 # 1. Summarizing the data
 
-```{r creating-lobs-summary}
+```{r creating-lobs-summary, eval = TRUE, echo = TRUE}
 # creating new data frame
 lobs_summary <- lobs %>% 
   
@@ -40,7 +43,7 @@ lobs_summary <- lobs %>%
 
 ## a. create a static plot
 
-```{r static-boxplot}
+```{r static-boxplot, eval = TRUE, echo = TRUE}
 static <- lobs_summary %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
@@ -73,12 +76,13 @@ static <- lobs_summary %>%
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
+# print plot ----
 static
 ```
 
 ## b. create an interactive plot
 
-```{r basic-interactive-plot}
+```{r basic-interactive-plot, eval = TRUE, echo = TRUE}
 ggplotly(static) # ta-da!
 ```
 
@@ -86,7 +90,7 @@ ggplotly(static) # ta-da!
 
 ### i. create a marker
 
-```{r summary-marker-df}
+```{r summary-marker-df, eval = TRUE, echo = TRUE}
 # adding a column to lobs_summary 
 lobs_summary_marker <- lobs_summary %>% 
   
@@ -99,7 +103,7 @@ lobs_summary_marker <- lobs_summary %>%
 
 ### ii. make a new static plot with `text = marker` aesthetic argument
 
-```{r new-static-plot, warning = TRUE}
+```{r new-static-plot, eval = TRUE, echo = TRUE, warning = TRUE}
 # creating a new static plot
 static_with_marker <- lobs_summary_marker %>% 
   
@@ -128,13 +132,13 @@ static_with_marker <- lobs_summary_marker %>%
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
-# running the ggplot object will give you a scary warning - that's ok!
+# printing the ggplot object will give you a scary warning - that's ok! ----
 static_with_marker
 ```
 
 ### iii. create plot with markers
 
-```{r better-interactive-plot}
+```{r better-interactive-plot, eval = TRUE, echo = TRUE}
 # tooltip = "text" corresponds to the aes() text call from above!
 lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
   
@@ -154,12 +158,13 @@ lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>%
     )
   )
 
+# print plot ----
 lobs_interactive
 ```
 
 ### iv. doing things in `plot_ly`
 
-```{r doing-in-plotly}
+```{r doing-in-plotly, eval = TRUE, echo = TRUE}
 plot_ly(
   
   # call the data ----
@@ -215,13 +220,13 @@ plot_ly(
 
 ## a. create a basic interactive table
 
-```{r basic-DT}
+```{r basic-DT, eval = TRUE, echo = TRUE}
 datatable(data = lobs)
 ```
 
 ## b. customizing your DT
 
-```{r advanced-DT}
+```{r advanced-DT, eval = TRUE, echo = TRUE}
 lobs_dt <- datatable(data = lobs, 
                      # make the column names nice ----
                      colnames = c("Year", "Date", "Site", "Protection status", "Transect", "Replicate", 
@@ -271,65 +276,68 @@ lobs_dt
 
 ## a. some cleaning and filtering
 
-```{r unique-sites}
-sites <- lobs |> 
-  select(site, protection_status, lat, lon) |> 
+```{r unique-sites, eval = TRUE, echo = TRUE}
+# create df of unique sites ----
+sites <- lobs %>%  
+  select(site, protection_status, lat, lon) %>%  
   distinct()
 
-mpa <- sites |> 
+# just mpa sites ----
+mpa <- sites %>%  
   filter(protection_status == "MPA")
 
-non_mpa <- sites |> 
+# just non-mpa sites
+non_mpa <- sites %>%  
   filter(protection_status == "non-MPA")
 ```
 
 ## b. create a custom icon
 
-```{r lobster-icon}
+```{r lobster-icon, eval = TRUE, echo = TRUE}
 lobster_icon <- makeIcon(
-  iconUrl = "media/lobster.png",
+  iconUrl = "../media/lobster.png",
   iconWidth = 30, iconHeight = 30
 )
 ```
+**Note:** Above, we specify the file path to our lobster image, relative to this file (we need to back out a directory level, from `/keys` to `SORTEE-May2023`, then into `media/lobster.png`)
 
 ## c. create a map!
 
-```{r leaflet-map}
+```{r leaflet-map, eval = TRUE, echo = TRUE}
 # initialize map ----
-site_map <- leaflet() |> 
+site_map <- leaflet() %>%  
   
   # add base map tiles (use `addTiles()` for Google maps tiles, OR `addProviderTiles()` for 3rd party base maps: https://leaflet-extras.github.io/leaflet-providers/preview/) ----
-  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") |> # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
-  addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") |> 
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%  # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
+  addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") %>%  
   
   # add mini map ----
-  addMiniMap(toggleDisplay = TRUE, minimized = TRUE) |> 
+  addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%  
   
   # set view over Santa Barbara Channel ----
-  setView(lng =  -119.83, lat = 34.44, zoom = 9) |> 
+  setView(lng =  -119.83, lat = 34.44, zoom = 9) %>%  
   
   # add MPA markers ----
   addMarkers(data = mpa, group = "MPA Sites",
              icon = lobster_icon,
              lng = ~lon, lat = ~lat,
              popup = paste("Site Name:", mpa$site, "<br>",
-                           "Coordinates (lat/long):", mpa$lat, ",", mpa$lon)) |>
+                           "Coordinates (lat/long):", mpa$lat, ",", mpa$lon)) %>% 
   
   # add non-MPA markers ----
   addMarkers(data = non_mpa, group = "Non-MPA Sites",
              icon = lobster_icon,
              lng = ~lon, lat = ~lat,
              popup = paste("Site Name:", non_mpa$site, "<br>",
-                           "Coorinates (lat/long):", non_mpa$lat, ",", non_mpa$lon)) |>
+                           "Coorinates (lat/long):", non_mpa$lat, ",", non_mpa$lon)) %>% 
 
   # add layers control (toggle base map tiles & markers based on group IDs) ----
   addLayersControl(
     baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
-    overlayGroups = c("MPA Sites", "Non-MPA Sites")) |> 
+    overlayGroups = c("MPA Sites", "Non-MPA Sites")) %>%  
   
   # add reset map button ----
   leaflet.extras::addResetMapButton()
-                   
 
 # print map ----
 site_map
@@ -337,7 +345,7 @@ site_map
 
 ## d. saving the html objects
 
-```{r saving-map, eval = FALSE}
+```{r saving-map, eval = FALSE, echo = TRUE}
 htmltools::save_html(lobs_interactive, here::here("outputs", "plotly.html"))
 htmltools::save_html(lobs_dt, here::here("outputs", "dt.html"))
 htmltools::save_html(site_map, here::here("outputs", "leaflet.html"))
