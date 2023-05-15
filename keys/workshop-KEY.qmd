@@ -1,7 +1,7 @@
 ---
 title: "Integrating JavaScript Libraries into R for Dynamic Visualizations"
 author: "your name here"
-date: May 23, 2023
+date: May 14, 2023
 execute:
   message: false
   warning: false
@@ -9,7 +9,6 @@ format:
   html:
     toc: true
     toc-location: left
-    theme: sandstone
 ---
 
 # 0. Setting up

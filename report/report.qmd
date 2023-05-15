@@ -1,0 +1,217 @@
+---
+title: "LobsterWatch Santa Barbara"
+subtitle: "Bringing you this extremely made-up report on the state of everyone's favorite crustacean"
+authors:
+  - name: Sam Csik
+    affiliation: National Center for Ecological Analysis and Synthesis
+    orcid: 0000-0002-5300-3075
+  - name: An Bui
+    affiliation: Department of Ecology, Evolution & Marine Biology, University of California, Santa Barbara
+    orcid: 0000-0002-9548-7776
+date: May 14, 2023
+execute:
+  message: false
+  warning: false
+format:
+  html:
+    toc: true
+    toc-location: left
+    code-fold: true
+    code-tools: true
+    theme: sandstone
+---
+
+```{r setup}
+#| eval: true
+#| echo: false
+
+#.........................load libraries.........................
+library(here)
+library(tidyverse)
+library(plotly)
+library(DT)
+library(leaflet)
+library(leaflet.extras)
+
+#..........................read in data..........................
+lobs <- readRDS(file = here::here("data", "lobsters.rds"))
+
+# creating new data frame
+lobs_summary <- lobs %>% 
+  
+  # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
+  group_by(protection_status, site, year) %>% 
+  count()
+```
+
+## Background
+
+Lobsters are ecologically important marine predators and also very tasty treats. Because people love them for lots of different reasons, we're reporting on the status of these large ocean bugs at both MPA and non-MPA sites in the Santa Barbara Channel.
+
+## Methods
+
+Santa Barbara Coastal LTER, D. Reed, and R. Miller. 2022. **SBC LTER: Reef: Abundance, size and fishing effort for California Spiny Lobster (Panulirus interruptus), ongoing since 2012** ver 8. Environmental Data Initiative. <https://doi.org/10.6073/pasta/25aa371650a671bafad64dd25a39ee18>.
+
+## Sites of Interest
+
+```{r leaflet map}
+#| eval: true
+#| echo: true
+#..................get unique site/location data.................
+sites <- lobs |> 
+  select(site, protection_status, lat, lon) |> 
+  distinct()
+
+#......................split MPA vs non-MPA......................
+mpa <- sites |> 
+  filter(protection_status == "MPA")
+
+non_mpa <- sites |> 
+  filter(protection_status == "non-MPA")
+  
+#.......................create custom icon.......................
+lobster_icon <- makeIcon(
+  iconUrl = "media/lobster.png",
+  iconWidth = 30, iconHeight = 30
+)
+
+#...........................create map...........................
+
+# initialize map ----
+site_map <- leaflet() |> 
+  
+  # add base map tiles (use `addTiles()` for Google maps tiles, OR `addProviderTiles()` for 3rd party base maps: https://leaflet-extras.github.io/leaflet-providers/preview/) ----
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") |> # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
+  addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") |> 
+  
+  # add mini map ----
+  addMiniMap(toggleDisplay = TRUE, minimized = TRUE) |> 
+  
+  # set view over Santa Barbara Channel ----
+  setView(lng =  -119.83, lat = 34.44, zoom = 9) |> 
+  
+  # add MPA markers ----
+  addMarkers(data = mpa, group = "MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", mpa$site, "<br>",
+                           "Coorinates (lat/long):", mpa$lat, ",", mpa$lon)) |>
+  
+  # add non-MPA markers ----
+  addMarkers(data = non_mpa, group = "Non-MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", non_mpa$site, "<br>",
+                           "Coorinates (lat/long):", non_mpa$lat, ",", non_mpa$lon)) |>
+
+  # add layers control (toggle base map tiles & markers based on group IDs) ----
+  addLayersControl(
+    baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
+    overlayGroups = c("MPA Sites", "Non-MPA Sites")) |> 
+  
+  # add reset map button ----
+  leaflet.extras::addResetMapButton()
+                   
+
+# print map ----
+site_map
+```
+
+## Results
+
+```{r summary-marker-df}
+#| eval: true
+#| echo: true
+# adding a column to lobs_summary 
+lobs_summary_marker <- lobs_summary %>% 
+  
+  # create a new column called "marker" ----
+  mutate(marker = paste("Site:", site, "<br>",
+                      "Year:", year, "<br>",
+                      "Status:", protection_status, "<br>",
+                      "Lobster count:", n))
+
+# creating a new static plot
+static_with_marker <- lobs_summary_marker %>% 
+  
+  # create boxplot of mpa vs non-mpa lobster counts ----
+  ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
+  
+  # geoms: boxplot and jitter
+  geom_boxplot(width = 0.5, outlier.shape = NA) +
+  geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
+             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
+  
+  # update colors ----
+  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
+  
+  # update labels ----
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
+  
+  # theme ----
+  theme_linedraw() +
+  theme(axis.text = element_text(size = 10),
+        axis.title = element_text(size = 13),
+        legend.text = element_text(size = 10),
+        legend.title = element_text(size = 11))
+
+# printing the ggplot object will give you a scary warning - that's ok! ----
+static_with_marker
+```
+
+## Appendix
+
+Explore and download the raw data used throughout this report:
+
+```{r DT}
+#| eval: true
+#| echo: true
+#................customize your interactive table................
+datatable(data = lobs, 
+          
+          # make the column names nice ----
+          colnames = c("Year", "Date", "Site", "Protection status", "Transect", "Replicate", 
+                       "Size (mm)", "Count", "Latitude", "Longitude"),
+          
+          # column filters: sliders and drop down menus ----
+          filter = "top", 
+          
+          # extensions: lots of these! ----
+          extensions = c("Buttons", "ColReorder"),
+          
+          # options ----
+          options = list(
+            # list 10 entries at once
+            pageLength = 10, 
+            # automatically size columns
+            autoWidth = TRUE,
+            # highlight entries that match search term
+            searchHighlight = TRUE,
+            # allow regular expressions and case insensitive searches
+            search = list(regex = TRUE, caseInsensitive = TRUE),
+            dom = "Bfrtip",
+            # buttons options
+            buttons = c("copy", "csv", "excel", "pdf", "print", "colvis"),
+            # links to extension call
+            colReorder = TRUE)
+          ) %>% 
+  
+  # styling cells: coloring site background
+  formatStyle(
+    "site",
+    # styleEqual allows matches to column contents
+    backgroundColor = styleEqual(
+      levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
+      values = c("NAPL" = "#91B38A", 
+                 "IVEE" = "#9565CC", 
+                 "AQUE" = "#CCC065", 
+                 "MOHK" = "#658ACC", 
+                 "CARP" = "#CC6565")
+    )
+  )
+```
+
