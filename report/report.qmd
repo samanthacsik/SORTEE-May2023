@@ -71,7 +71,7 @@ non_mpa <- sites |>
   
 #.......................create custom icon.......................
 lobster_icon <- makeIcon(
-  iconUrl = "media/lobster.png",
+  iconUrl = here::here("media", "lobster.png"),
   iconWidth = 30, iconHeight = 30
 )
 
@@ -119,6 +119,8 @@ site_map
 
 ## Results
 
+There are more lobsters in MPAs than non-MPAs!
+
 ```{r summary-marker-df}
 #| eval: true
 #| echo: true
@@ -159,8 +161,27 @@ static_with_marker <- lobs_summary_marker %>%
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
-# printing the ggplot object will give you a scary warning - that's ok! ----
-static_with_marker
+# tooltip = "text" corresponds to the aes() text call from above!
+lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
+  
+  # layout: most formatting goes here! ----
+  layout(
+    font = list(family = "Times"),
+  
+    # editing the marker/tooltip/hoverlabel
+    hoverlabel = list(
+      # editing the font: all goes in a list()
+      font = list(
+        family = "Times",
+        size = 13,
+        color = "#FFFFFF",
+        align = "left"
+      )
+    )
+  )
+
+# print plot ----
+lobs_interactive
 ```
 
 ## Appendix
