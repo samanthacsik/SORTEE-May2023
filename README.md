@@ -60,7 +60,7 @@ install.packages("leaflet")
 install.packages(pkgs = c("here", "tidyverse", "DT", "plotly", "leaflet"))
 ```
 
-2. Fork and clone this GitHub repository OR if you aren't using GitHub, setup an R project [LINK step-by-step instructions for each of these options]
+2. Fork and clone this GitHub repository OR if you aren't using GitHub, setup an R project. Find detailed instructions for both options on [our wiki](https://github.com/samanthacsik/SORTEE-May2023/wiki).
 
 3. (OPTIONAL) If you'd like to use Quarto, you'll want to make sure that you have RStudio v2022.07.1+ installed. 
 Choose **Help > Check for Updates** from the menu bar to update RStudio (it'll open a browser window where you can download the latest version). Quarto *should* be automatically installed with the RStudio update, but if not, download it [here](https://quarto.org/docs/get-started/) and install separately. Quarto is installed as a directory (i.e. folder) of files on your machine (within the **Applications** folder on a Mac, or likely within **Program Files** on a PC -- though you may specify the Destination Folder using the setup wizard). **Note:** Quarto is neither an application nor an R package, but rather a command-line interface (CLI) -- however, you *do not* need to be familiar with the command line to use all it's awesome features (RStudio provides the graphical user interface, e.g. buttons)! 
