@@ -16,8 +16,8 @@ All the files you need for following along with the live-coding exercises, plus 
 │   └── lobsters.rds                # the pre-processed data we'll we using  
 |
 ├── example-reports/                # ficticous reports with embedded interactive objects
-|   └── report-qmd.qmd                  # report created using a Quarto Markdown file (`.qmd`)
-|   └── report-rmd.rmd                  # report created using an R Markdown file (`.rmd`)
+|   └── report-qmd.qmd              # report created using a Quarto Markdown file (`.qmd`)
+|   └── report-rmd.rmd              # report created using an R Markdown file (`.rmd`)
 |
 ├── keys/                           # keys, to follow along with if you get lost or want to spend some more time with the material! pick whichever file format you're using to write your code in
 |   └── workshop-KEY.qmd            # for the Quarto users
