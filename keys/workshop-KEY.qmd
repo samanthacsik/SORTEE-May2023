@@ -321,7 +321,7 @@ non_mpa <- sites %>%
 #| eval: true
 #| echo: true
 lobster_icon <- makeIcon(
-  iconUrl = "../media/lobster.png",
+  iconUrl = here::here("media", "lobster.png"),
   iconWidth = 30, iconHeight = 30
 )
 ```
