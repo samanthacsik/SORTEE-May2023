@@ -320,8 +320,18 @@ non_mpa <- sites %>%
 
 ## b. create a custom icon
 
-```{r lobster-icon}
+```{r}
 #| eval: true
+#| echo: false
+# NOTE: for deployed version of key, which is saved to the root directory; below is how participants should code file path, given repo structure
+lobster_icon <- makeIcon(
+  iconUrl = "media/lobster.png", # <1>
+  iconWidth = 30, iconHeight = 30
+)
+```
+
+```{r lobster-icon}
+#| eval: false
 #| echo: true
 lobster_icon <- makeIcon(
   iconUrl = "../media/lobster.png", # <1>
