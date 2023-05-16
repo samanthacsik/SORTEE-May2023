@@ -401,5 +401,11 @@ htmltools::save_html(site_map, here::here("outputs", "leaflet.html"))
 
 # 5. Prepare a report with your interactive visualizations!
 
-Check out this [sample report](example-reports/report.html), which includes prose, code, and embedded interactive data visualizations. 
+Dynamic visualizations are particularly effective when embedded in reports -- check out this fictitious report, created using both `.qmd` and `.rmd` files (for a side-by-side comparison):
+
+-  [LobsterWatch report (`.qmd`)](example-reports/report-qmd.html)
+-  [LobsterWatch report (`.rmd`)](example-reports/report-rmd.html)
+
+While you may notice some feature and formatting differences between the two, both Quarto documents and R Markdown documents are effective tools for generating reproducible reports that combine prose, code, and outputs. 
+
 
