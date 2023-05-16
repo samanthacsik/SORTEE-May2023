@@ -17,6 +17,10 @@ format:
     toc-location: left
 ---
 
+# What is this document?
+
+The following code was written as reference material for the May 2023 workshop, [Integrating JavaScript Libraries into R for Dynamic Visualizations](https://www.eventbrite.com/e/integrating-javascript-libraries-into-r-for-dynamic-visualizations-tickets-615162927877), led by [Sam Csik](https://samanthacsik.github.io/) and [An Bui](https://an-bui.com/) as part of the [SORTEE Workshop and Webinar Series](https://www.sortee.org/other_events/).
+
 # 0. Setting up
 
 ```{r libraries-and-data}
