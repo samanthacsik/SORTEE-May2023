@@ -343,7 +343,7 @@ site_map <- leaflet() %>%
 site_map
 ```
 
-## d. saving the html objects
+# 4. saving the html objects
 
 ```{r saving-map, eval = FALSE, echo = TRUE}
 htmltools::save_html(lobs_interactive, here::here("outputs", "plotly.html"))
