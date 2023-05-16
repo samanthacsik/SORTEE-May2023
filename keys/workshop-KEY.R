@@ -3,24 +3,25 @@
 ##                                0. Setting up                             ----
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# importing packages ----
 library(tidyverse) # general use
 library(plotly) # JS plots!
 library(DT) # JS tables!
 library(leaflet) # JS maps!
 library(leaflet.extras) # leaflet add-ons!
 
-# reading in the RDS (saved data object)
+# reading in the data ----
 lobs <- readRDS(file = here::here("data", "lobsters.rds"))
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##                          1. Summarizing the data                         ----
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# creating new data frame
+# creating new data frame ----
 lobs_summary <- lobs %>% 
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
-group_by(protection_status, site, year) %>% 
+  group_by(protection_status, site, year) %>% 
   count()
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,30 +35,30 @@ group_by(protection_status, site, year) %>%
 static <- lobs_summary %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
-ggplot(aes(x = protection_status, y = n)) +
+  ggplot(aes(x = protection_status, y = n)) +
   
-  # geoms: a boxplot and points with jitter
+  # geoms: a boxplot and points with jitter ----
   geom_boxplot(width = 0.5, outlier.shape = NA) +
   geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
              # turn the points into a jitter (with a little more control than geom_jitter)
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
-  # update colors ----
-scale_color_manual(values = c("NAPL" = "#91B38A", 
-                              "IVEE" = "#9565CC", 
-                              "AQUE" = "#CCC065", 
-                              "MOHK" = "#658ACC", 
-                              "CARP" = "#CC6565")) +
+  # update colors and shapes ----
+  scale_color_manual(values = c("NAPL" = "#91B38A", 
+                                "IVEE" = "#9565CC", 
+                                "AQUE" = "#CCC065", 
+                                "MOHK" = "#658ACC", 
+                                "CARP" = "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
-labs(x = "Protection Status",
-     y = "Lobster Counts",
-     color = "Site", 
-     shape = "Site") + 
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+      color = "Site", 
+      shape = "Site") + 
   
   # theme ----
-theme_linedraw() +
+  theme_linedraw() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
@@ -78,46 +79,46 @@ ggplotly(static) # ta-da!
 
 #.......................i. create a marker.......................
 
-# adding a column to lobs_summary 
+# adding a column to lobs_summary ----
 lobs_summary_marker <- lobs_summary %>% 
   
   # create a new column called "marker" ----
-mutate(marker = paste("Site:", site, "<br>",
-                      "Year:", year, "<br>",
-                      "Status:", protection_status, "<br>",
-                      "Lobster count:", n))
+  mutate(marker = paste("Site:", site, "<br>",
+                        "Year:", year, "<br>",
+                        "Status:", protection_status, "<br>",
+                        "Lobster count:", n))
 
 #....ii. make a new static plot with `text = marker` aes arg.....
 
-# creating a new static plot
+# creating a new static plot ----
 static_with_marker <- lobs_summary_marker %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
-ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
+  ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
   
-  # geoms: boxplot and jitter
+  # geoms: boxplot and jitter ----
   geom_boxplot(width = 0.5, outlier.shape = NA) +
   geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
-  # update colors ----
-scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  # update colors and shapes ----
+  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
-labs(x = "Protection Status",
-     y = "Lobster Counts",
-     color = "Site", 
-     shape = "Site") + 
+  labs(x = "Protection Status",
+      y = "Lobster Counts",
+      color = "Site", 
+      shape = "Site") + 
   
   # theme ----
-theme_linedraw() +
+  theme_linedraw() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
-# running the ggplot object will give you a scary warning - that's ok!
+# running the ggplot object will give you a scary warning - that's ok! ----
 static_with_marker
 
 #................iii. create a plot with markers.................
@@ -126,20 +127,20 @@ static_with_marker
 lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
   
   # layout: most formatting goes here! ----
-layout(
-  font = list(family = "Times"),
-  
-  # editing the marker/tooltip/hoverlabel
-  hoverlabel = list(
-    # editing the font: all goes in a list()
-    font = list(
-      family = "Times",
-      size = 13,
-      color = "#FFFFFF",
-      align = "left"
+  layout(
+    font = list(family = "Times"),
+    
+    # editing the marker/tooltip/hoverlabel ----
+    hoverlabel = list(
+      # editing the font: all goes in a list()
+      font = list(
+        family = "Times",
+        size = 13,
+        color = "#FFFFFF",
+        align = "left"
+        )
+      )
     )
-  )
-)
 
 # print plot ----
 lobs_interactive
@@ -176,15 +177,16 @@ plot_ly(
   colors = c("cornflowerblue", "darkgreen")) %>% 
   
   layout(
-    # global font option
+    
+    # global font option ----
     font = list(family = "Times", 
                 size = 14),
     
-    # changing axis labels
+    # changing axis labels ----
     xaxis = list(title = list(text = "Protection status")),
     yaxis = list(title = list(text = "Lobster count")),
     
-    # editing the marker/tooltip/hoverlabel
+    # editing the marker/tooltip/hoverlabel ----
     hoverlabel = list(
       # editing the font: all goes in a list()
       font = list(
@@ -239,18 +241,17 @@ lobs_dt <- datatable(data = lobs,
 ) %>% 
   
   # styling cells: coloring site background ----
-formatStyle(
-  "site",
-  # styleEqual allows matches to column contents ----
-  backgroundColor = styleEqual(
-    levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
-    values = c("NAPL" = "#91B38A", 
-               "IVEE" = "#9565CC", 
-               "AQUE" = "#CCC065", 
-               "MOHK" = "#658ACC", 
-               "CARP" = "#CC6565")
-  )
-)
+  formatStyle("site",
+              # styleEqual allows matches to column contents ----
+              backgroundColor = styleEqual(
+                levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
+                values = c("NAPL" = "#91B38A", 
+                           "IVEE" = "#9565CC", 
+                           "AQUE" = "#CCC065", 
+                           "MOHK" = "#658ACC", 
+                           "CARP" = "#CC6565")
+                )
+              )
 
 # print table ----
 lobs_dt
