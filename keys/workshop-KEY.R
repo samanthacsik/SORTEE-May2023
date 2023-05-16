@@ -3,24 +3,25 @@
 ##                                0. Setting up                             ----
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# import packages ----
 library(tidyverse) # general use
 library(plotly) # JS plots!
 library(DT) # JS tables!
 library(leaflet) # JS maps!
 library(leaflet.extras) # leaflet add-ons!
 
-# reading in the RDS (saved data object)
+# reading in the data ----
 lobs <- readRDS(file = here::here("data", "lobsters.rds"))
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##                          1. Summarizing the data                         ----
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# creating new data frame
+# creating new data frame ----
 lobs_summary <- lobs %>% 
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
-group_by(protection_status, site, year) %>% 
+  group_by(protection_status, site, year) %>% 
   count()
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,30 +35,30 @@ group_by(protection_status, site, year) %>%
 static <- lobs_summary %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
-ggplot(aes(x = protection_status, y = n)) +
+  ggplot(aes(x = protection_status, y = n)) +
   
-  # geoms: a boxplot and points with jitter
+  # geoms: a boxplot and points with jitter ----
   geom_boxplot(width = 0.5, outlier.shape = NA) +
   geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
              # turn the points into a jitter (with a little more control than geom_jitter)
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
-  # update colors ----
-scale_color_manual(values = c("NAPL" = "#91B38A", 
-                              "IVEE" = "#9565CC", 
-                              "AQUE" = "#CCC065", 
-                              "MOHK" = "#658ACC", 
-                              "CARP" = "#CC6565")) +
+  # update colors and shapes ----
+  scale_color_manual(values = c("NAPL" = "#91B38A", 
+                                "IVEE" = "#9565CC", 
+                                "AQUE" = "#CCC065", 
+                                "MOHK" = "#658ACC", 
+                                "CARP" = "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
-labs(x = "Protection Status",
-     y = "Lobster Counts",
-     color = "Site", 
-     shape = "Site") + 
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
   
   # theme ----
-theme_linedraw() +
+  theme_linedraw() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
@@ -89,7 +90,7 @@ mutate(marker = paste("Site:", site, "<br>",
 
 #....ii. make a new static plot with `text = marker` aes arg.....
 
-# creating a new static plot
+# creating a new static plot ----
 static_with_marker <- lobs_summary_marker %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
@@ -100,24 +101,24 @@ ggplot(aes(x = protection_status, y = n, text = marker, group = protection_statu
   geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
-  # update colors ----
-scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  # update colors and shapes ----
+  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
-labs(x = "Protection Status",
-     y = "Lobster Counts",
-     color = "Site", 
-     shape = "Site") + 
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
   
   # theme ----
-theme_linedraw() +
+  theme_linedraw() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
-# running the ggplot object will give you a scary warning - that's ok!
+# running the ggplot object will give you a scary warning - that's ok! ----
 static_with_marker
 
 #................iii. create a plot with markers.................
@@ -126,11 +127,11 @@ static_with_marker
 lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
   
   # layout: most formatting goes here! ----
-layout(
-  font = list(family = "Times"),
-  
-  # editing the marker/tooltip/hoverlabel
-  hoverlabel = list(
+  layout(
+    font = list(family = "Times"),
+    
+    # editing the marker/tooltip/hoverlabel
+    hoverlabel = list(
     # editing the font: all goes in a list()
     font = list(
       family = "Times",
@@ -239,17 +240,17 @@ lobs_dt <- datatable(data = lobs,
 ) %>% 
   
   # styling cells: coloring site background ----
-formatStyle(
-  "site",
-  # styleEqual allows matches to column contents ----
-  backgroundColor = styleEqual(
-    levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
-    values = c("NAPL" = "#91B38A", 
-               "IVEE" = "#9565CC", 
-               "AQUE" = "#CCC065", 
-               "MOHK" = "#658ACC", 
-               "CARP" = "#CC6565")
-  )
+formatStyle("site",
+            
+            # styleEqual allows matches to column contents ----
+            backgroundColor = styleEqual(
+              levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
+              values = c("NAPL" = "#91B38A", 
+                         "IVEE" = "#9565CC", 
+                         "AQUE" = "#CCC065", 
+                         "MOHK" = "#658ACC", 
+                         "CARP" = "#CC6565")
+            )
 )
 
 # print table ----
@@ -293,36 +294,36 @@ lobster_icon <- makeIcon(
 site_map <- leaflet() %>% 
   
   # add base map tiles (use `addTiles()` for Google maps tiles, OR `addProviderTiles()` for 3rd party base maps: https://leaflet-extras.github.io/leaflet-providers/preview/) ----
-addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>% # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>% # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
   addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") %>% 
   
   # add mini map ----
-addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>% 
+  addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>% 
   
   # set view over Santa Barbara Channel ----
-setView(lng =  -119.83, lat = 34.44, zoom = 9) %>% 
+  setView(lng =  -119.83, lat = 34.44, zoom = 9) %>% 
   
   # add MPA markers ----
-addMarkers(data = mpa, group = "MPA Sites",
-           icon = lobster_icon,
-           lng = ~lon, lat = ~lat,
-           popup = paste("Site Name:", mpa$site, "<br>",
-                         "Coordinates (lat/long):", mpa$lat, ",", mpa$lon)) %>%
+  addMarkers(data = mpa, group = "MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", mpa$site, "<br>",
+                           "Coordinates (lat/long):", mpa$lat, ",", mpa$lon)) %>%
   
   # add non-MPA markers ----
-addMarkers(data = non_mpa, group = "Non-MPA Sites",
-           icon = lobster_icon,
-           lng = ~lon, lat = ~lat,
-           popup = paste("Site Name:", non_mpa$site, "<br>",
-                         "Coorinates (lat/long):", non_mpa$lat, ",", non_mpa$lon)) %>%
+  addMarkers(data = non_mpa, group = "Non-MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", non_mpa$site, "<br>",
+                           "Coorinates (lat/long):", non_mpa$lat, ",", non_mpa$lon)) %>%
   
   # add layers control (toggle base map tiles & markers based on group IDs) ----
-addLayersControl(
-  baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
-  overlayGroups = c("MPA Sites", "Non-MPA Sites")) %>% 
+  addLayersControl(
+    baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
+    overlayGroups = c("MPA Sites", "Non-MPA Sites")) %>% 
   
   # add reset map button ----
-leaflet.extras::addResetMapButton()
+  leaflet.extras::addResetMapButton()
 
 # print map ----
 site_map

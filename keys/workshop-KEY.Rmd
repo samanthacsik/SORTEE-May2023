@@ -194,6 +194,7 @@ plot_ly(
   color = ~ protection_status,
   colors = c("cornflowerblue", "darkgreen")) %>% 
   
+  # layout: most formatting goes here! ----
   layout(
     # global font option
     font = list(family = "Times", 
@@ -256,18 +257,18 @@ lobs_dt <- datatable(data = lobs,
 ) %>% 
   
   # styling cells: coloring site background ----
-formatStyle(
-  "site",
-  # styleEqual allows matches to column contents ----
-  backgroundColor = styleEqual(
-    levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
-    values = c("NAPL" = "#91B38A", 
-               "IVEE" = "#9565CC", 
-               "AQUE" = "#CCC065", 
-               "MOHK" = "#658ACC", 
-               "CARP" = "#CC6565")
-  )
-)
+  formatStyle("site",
+              
+              # styleEqual allows matches to column contents ----
+              backgroundColor = styleEqual(
+                levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
+                values = c("NAPL" = "#91B38A", 
+                           "IVEE" = "#9565CC", 
+                           "AQUE" = "#CCC065", 
+                           "MOHK" = "#658ACC", 
+                           "CARP" = "#CC6565")
+                )
+              )
 
 lobs_dt
 ```
@@ -308,7 +309,7 @@ lobster_icon <- makeIcon(
 site_map <- leaflet() %>%  
   
   # add base map tiles (use `addTiles()` for Google maps tiles, OR `addProviderTiles()` for 3rd party base maps: https://leaflet-extras.github.io/leaflet-providers/preview/) ----
-  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%  # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%  
   addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") %>%  
   
   # add mini map ----
