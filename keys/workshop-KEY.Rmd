@@ -302,7 +302,6 @@ lobster_icon <- makeIcon(
   iconWidth = 30, iconHeight = 30
 )
 ```
-**Note:** Above, we specify the file path to our lobster image, relative to this file (we need to back out a directory level, from `/keys` to `SORTEE-May2023`, then into `media/lobster.png`)
 
 ## c. create a map!
 
@@ -311,7 +310,7 @@ lobster_icon <- makeIcon(
 site_map <- leaflet() %>%  
   
   # add base map tiles (use `addTiles()` for Google maps tiles, OR `addProviderTiles()` for 3rd party base maps: https://leaflet-extras.github.io/leaflet-providers/preview/) ----
-  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%  # modify base map appearance with options: `providerTileOptions(opacity = 0.5, noWrap = FALSE)`
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>% 
   addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") %>%  
   
   # add mini map ----

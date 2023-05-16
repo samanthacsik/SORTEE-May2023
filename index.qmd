@@ -165,7 +165,7 @@ lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>%
   layout(
     font = list(family = "Times"),
   
-    # editing the marker/tooltip/hoverlabel ----
+    # editing the marker/tooltip/hoverlabel 
     hoverlabel = list(
       # editing the font: all goes in a list()
       font = list(
@@ -221,11 +221,11 @@ plot_ly(
     font = list(family = "Times", 
                 size = 14),
     
-    # changing axis labels ----
+    # changing axis labels 
     xaxis = list(title = list(text = "Protection status")),
     yaxis = list(title = list(text = "Lobster count")),
     
-    # editing the marker/tooltip/hoverlabel ----
+    # editing the marker/tooltip/hoverlabel 
     hoverlabel = list(
       # editing the font: all goes in a list()
       font = list(
@@ -282,7 +282,7 @@ lobs_dt <- datatable(data = lobs,
 ) %>% 
   
   # styling cells: coloring site background ----
-formatStyle("site",
+  formatStyle("site",
             
             # styleEqual allows matches to column contents ----
             backgroundColor = styleEqual(
@@ -292,9 +292,8 @@ formatStyle("site",
                          "AQUE" = "#CCC065", 
                          "MOHK" = "#658ACC", 
                          "CARP" = "#CC6565")
-              
             )
-)
+          )
 
 # print table ----
 lobs_dt
@@ -328,7 +327,7 @@ non_mpa <- sites %>%
 #| echo: false
 # NOTE: for deployed version of key, which is saved to the root directory; below is how participants should code file path, given repo structure
 lobster_icon <- makeIcon(
-  iconUrl = "media/lobster.png", # <1>
+  iconUrl = "media/lobster.png", 
   iconWidth = 30, iconHeight = 30
 )
 ```
@@ -337,11 +336,10 @@ lobster_icon <- makeIcon(
 #| eval: false
 #| echo: true
 lobster_icon <- makeIcon(
-  iconUrl = "../media/lobster.png", # <1>
+  iconUrl = "../media/lobster.png",
   iconWidth = 30, iconHeight = 30
 )
 ```
-1. File path to our lobster image, relative to this file (we need to back out a directory level, from `/keys` to `SORTEE-May2023`, then into `media/lobster.png`)
 
 ## c. create a map!
 
