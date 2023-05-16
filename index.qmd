@@ -385,7 +385,7 @@ site_map <- leaflet() %>%
 site_map
 ```
 
-# 4. saving the html objects
+# 4. Saving the html objects
 
 ```{r saving-map}
 #| eval: false
@@ -394,3 +394,8 @@ htmltools::save_html(lobs_interactive, here::here("outputs", "plotly.html"))
 htmltools::save_html(lobs_dt, here::here("outputs", "dt.html"))
 htmltools::save_html(site_map, here::here("outputs", "leaflet.html"))
 ```
+
+# 5. Prepare a report with your interactive visualizations!
+
+Check out this [sample report](example-reports/report.html), which includes prose, code, and embedded interactive data visualizations. 
+
