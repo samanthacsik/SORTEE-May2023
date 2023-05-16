@@ -24,7 +24,7 @@ All the files you need for following along with the live-coding exercises, plus 
 |   └── workshop-KEY.rmd            # for the R Markdown users
 |   └── workshop-KEY.r              # for the R script users
 |     
-├── lib/                            # JS libraries that are loaded when using R??
+├── lib/                            # JS libraries that are automatically loaded when using the R package (you won't need to touch these)
 |   
 ├── media/                          # images
 │   └── lobster.png                 # lobster image used to create leaflet map markers
