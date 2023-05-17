@@ -1,7 +1,7 @@
 ---
 title: "Integrating JavaScript Libraries into R for Dynamic Visualizations"
-author: "your name here"
-date: May 23, 2023
+author: "An Bui"
+date: May 16, 2023
 execute:
   message: false
   warning: false
@@ -80,7 +80,7 @@ static
 ## b. create an interactive plot
 
 ```{r basic-interactive-plot}
-
+ggplotly(static)
 ```
 
 ## c. create a better interactive plot
@@ -88,7 +88,15 @@ static
 ### i. create a marker
 
 ```{r summary-marker-df}
-
+# adding a column to lobs_summary
+lobs_summary_marker <- lobs_summary %>% 
+  # creating a new column called "marker
+  mutate(marker = paste0(
+    "<br>", "Site: ", site, "<br>",
+    "Year: ", year, "<br>",
+    "Status: ", protection_status, "<br>",
+    "Lobster count: ", n
+  ))
 ```
 
 ### ii. make a new static plot with `text = marker` aesthetic argument
@@ -129,13 +137,55 @@ static_with_marker
 ### iii. create plot with markers
 
 ```{r better-interactive-plot}
+lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
+  # layout: most formatting goes here!
+  layout(
+    # adjusting the font
+    font = list(family = "Times"),
+    
+    # adjust the hover label
+    hoverlabel = list(
+      font = list(
+        family = "Times",
+        size = 13,
+        color = "white",
+        align = "left"
+      )
+    )
+  )
 
+lobs_interactive
 ```
 
 ### iv. doing things in `plot_ly`
 
 ```{r doing-in-plotly}
-
+plot_ly(
+  # call the data
+  lobs_summary_marker,
+  
+  # axes
+  x = ~ protection_status,
+  y = ~ n,
+  
+  # specifying type
+  type = "box",
+  
+  # show underlying data
+  boxpoints = "all",
+  
+  # center points on boxplot
+  pointpos = 0,
+  
+  # control width of jitter
+  jitter = 0.25,
+  
+  # tooltip/hover tip
+  # hoverinfo comes from the text argument
+  hoverinfo = "text",
+  # text comes from the marker column in the df
+  text = ~ marker
+)
 ```
 
 # 3. `DT`
@@ -143,13 +193,37 @@ static_with_marker
 ## a. create a basic interactive table
 
 ```{r basic-DT}
-
+datatable(data = lobs)
 ```
 
 ## b. customizing your DT
 
 ```{r advanced-DT}
+lobs_dt <- datatable(data = lobs,
+                     
+                     # make the column names nice
+                     colnames = c("Year", "Date", "Site", "Protection status", "Transect", "Replicate", "Size (mm)", "Count", "Latitude", "Longitude"), 
+                     
+                     extensions = c("Buttons", "ColReorder"),
+                     filter = "top",
+                     
+                     # adjust any formatting options, extensions, etc.
+                     options = list(
+                       # highlight search terms
+                       searchHighlight = TRUE,
+                       # automatically resize columns
+                       autoWidth = TRUE,
+                       buttons = c("copy", "csv", "excel", "pdf", "print", "colvis"),
+                       dom = "Bfrtip",
+                       
+                       # links to extension call
+                       colReorder = TRUE
+                       
+                       
+                     )
+                     )
 
+lobs_dt
 ```
 
 # 4. `leaflet`
@@ -174,13 +248,52 @@ non_mpa <- sites %>%
 ## b. create a custom icon
 
 ```{r lobster-icon}
-
+lobster_icon <- makeIcon(
+  iconUrl = here::here("media", "lobster.png"),
+  iconWidth = 30, iconHeight = 30
+)
 ```
 
 ## c. create a map!
 
 ```{r leaflet-map}
+site_map <- leaflet() %>% 
+  
+  # base map tile layer ----
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>% 
+  addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") %>% 
+  
+  # add mini map ----
+  addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>% 
+  
+  # set view over SB channel ----
+  setView(lng = -119.83, lat = 34.44, zoom = 9) %>% 
+  
+  # add MPA markers ----
+  addMarkers(data = mpa, group = "MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", mpa$site, "<br>",
+                           "Coordinates (lat/lon):", mpa$lat, "/", mpa$lon)) %>% 
+  
+  # add non-MPA markers ----
+  addMarkers(data = non_mpa, group = "Non-MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", non_mpa$site, "<br>",
+                           "Coordinates (lat/lon):", non_mpa$lat, "/", non_mpa$lon)) %>% 
+  
+  # add layers control ----
+  addLayersControl(
+    baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
+    overlayGroups = c("MPA Sites", "Non-MPA Sites")
+  ) %>% 
+  
+  # add reset map button ----
+  leaflet.extras::addResetMapButton()
 
+
+site_map
 ```
 
 # 4. saving the html objects
