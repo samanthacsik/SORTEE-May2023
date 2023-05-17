@@ -113,10 +113,10 @@ ggplotly(static) # ta-da!
 lobs_summary_marker <- lobs_summary %>% 
   
   # create a new column called "marker" ----
-  mutate(marker = paste("Site:", site, "<br>",
-                      "Year:", year, "<br>",
-                      "Status:", protection_status, "<br>",
-                      "Lobster count:", n))
+  mutate(marker = paste0("Site: ", site, "<br>",
+                      "Year: ", year, "<br>",
+                      "Status: ", protection_status, "<br>",
+                      "Lobster count: ", n))
 ```
 
 ### ii. make a new static plot with `text = marker` aesthetic argument
