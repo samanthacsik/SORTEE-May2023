@@ -1,6 +1,6 @@
 # Integrating JavaScript Libraries into R for Dynamic Visualizations
 
-## SORTEE Webinar Series, May 2023
+## [SORTEE Workshops & Webinars Series](https://www.sortee.org/other_events/), May 2023
 
 JavaScript, a programming language used to create dynamic web page content, is becoming an increasingly popular data science tool for building interactive data visualizations. However, learning an entirely new programming language can be time prohibitive and unrealistic for many researchers. Lucky for R users, there’s an app (well, R packages) for that!
 
