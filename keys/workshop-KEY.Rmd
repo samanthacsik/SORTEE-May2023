@@ -351,3 +351,14 @@ htmltools::save_html(lobs_interactive, here::here("outputs", "plotly.html"))
 htmltools::save_html(lobs_dt, here::here("outputs", "dt.html"))
 htmltools::save_html(site_map, here::here("outputs", "leaflet.html"))
 ```
+
+# 5. Prepare a report with your interactive visualizations!
+
+Dynamic visualizations are particularly effective when embedded in reports – check out the fictitious reports (one `.qmd` and `.rmd`, for a side-by-side comparison) in the `example-reports/` folder in this repo:
+
+-  `report-qmd.qmd`
+-  `report-rmd.rmd`
+
+Click the **Knit** or **Render** button on the open report file(s) to convert the markdown and code into a clean, organized, and easy-to-read HTML file.
+
+While you may notice some feature and formatting differences between the two, both Quarto documents and R Markdown documents are effective tools for generating reproducible reports that combine prose, code, and outputs.
