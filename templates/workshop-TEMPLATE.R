@@ -34,7 +34,7 @@ lobs_summary <- lobs %>%
 static <- lobs_summary %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
-ggplot(aes(x = protection_status, y = n)) +
+  ggplot(aes(x = protection_status, y = n)) +
   
   # geoms: a boxplot and points with jitter
   geom_boxplot(width = 0.5, outlier.shape = NA) +
@@ -43,21 +43,21 @@ ggplot(aes(x = protection_status, y = n)) +
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
   # update colors ----
-scale_color_manual(values = c("NAPL" = "#91B38A", 
-                              "IVEE" = "#9565CC", 
-                              "AQUE" = "#CCC065", 
-                              "MOHK" = "#658ACC", 
-                              "CARP" = "#CC6565")) +
+  scale_color_manual(values = c("NAPL" = "#91B38A", 
+                                "IVEE" = "#9565CC", 
+                                "AQUE" = "#CCC065", 
+                                "MOHK" = "#658ACC", 
+                                "CARP" = "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
-labs(x = "Protection Status",
-     y = "Lobster Counts",
-     color = "Site", 
-     shape = "Site") + 
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
   
   # theme ----
-theme_linedraw() +
+  theme_linedraw() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
@@ -80,35 +80,35 @@ static
 
 #....ii. make a new static plot with `text = marker` aes arg.....
 
-# creating a new static plot
+# creating a new static plot ----
 static_with_marker <- lobs_summary_marker %>% 
   
   # create boxplot of mpa vs non-mpa lobster counts ----
-ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
+  ggplot(aes(x = protection_status, y = n, text = marker, group = protection_status)) +
   
   # geoms: boxplot and jitter
   geom_boxplot(width = 0.5, outlier.shape = NA) +
   geom_point(aes(color = site, shape = site), size = 4, alpha = 0.8, 
              position = position_jitter(width = 0.25, height = 0, seed = 1)) +
   
-  # update colors ----
-scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
+  # update colors and shapes ----
+  scale_color_manual(values = c("#91B38A", "#9565CC", "#CCC065", "#658ACC", "#CC6565")) +
   scale_shape_manual(values = c(15, 25, 17, 18, 19)) +
   
   # update labels ----
-labs(x = "Protection Status",
-     y = "Lobster Counts",
-     color = "Site", 
-     shape = "Site") + 
+  labs(x = "Protection Status",
+       y = "Lobster Counts",
+       color = "Site", 
+       shape = "Site") + 
   
   # theme ----
-theme_linedraw() +
+  theme_linedraw() +
   theme(axis.text = element_text(size = 10),
         axis.title = element_text(size = 13),
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 11))
 
-# running the ggplot object will give you a scary warning - that's ok!
+# running the ggplot object will give you a scary warning - that's ok! ----
 static_with_marker
 
 #................iii. create a plot with markers.................
@@ -116,6 +116,57 @@ static_with_marker
 
 #..................iv. doing things in `plot_ly`.................
 
+plot_ly(
+  
+  # call the data ----
+  lobs_summary_marker,
+  
+  # axes ----
+  x = ~ protection_status,
+  y = ~ n,
+  
+  # type: plot_ly equivalent of "geom" ----
+  type = "box",
+  
+  # show underlying data ----
+  boxpoints = "all",
+  
+  # center points on boxplot ----
+  pointpos = 0,
+  
+  # control width of jitter ----
+  jitter = 0.25,
+  
+  # tooltip ----
+  hoverinfo = "text", 
+  text = ~ marker,
+  
+  # colors and shapes ----
+  color = ~ protection_status,
+  colors = c("cornflowerblue", "darkgreen")) %>% 
+  
+  # layout: most formatting goes here! ----
+  layout(
+  
+    # global font option 
+    font = list(family = "Times", 
+                size = 14),
+  
+    # changing axis labels 
+    xaxis = list(title = list(text = "Protection status")),
+    yaxis = list(title = list(text = "Lobster count")),
+  
+    # editing the marker/tooltip/hoverlabel 
+    hoverlabel = list(
+      # editing the font: all goes in a list()
+      font = list(
+        family = "Times",
+        size = 13,
+        color = "#FFFFFF",
+        align = "left"
+      )
+    )
+  )
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##                                    `DT`                                  ----
