@@ -16,12 +16,13 @@ lobs <- readRDS(file = here::here("data", "lobsters.rds"))
 ##                          1. Summarizing the data                         ----
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# creating new data frame
+# creating new data frame ----
 lobs_summary <- lobs %>% 
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
-  group_by(protection_status, site, year) %>% 
-  count()
+group_by(protection_status, site, year) %>% 
+  # count the total number of lobsters 
+  summarize(n = sum(total_count))
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ##                                2. `plotly`                               ----
