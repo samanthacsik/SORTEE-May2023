@@ -10,6 +10,8 @@ format:
     toc: true
     toc-location: left
     theme: sandstone
+editor_options: 
+  chunk_output_type: console
 ---
 
 # 0. Setting up
@@ -242,13 +244,46 @@ non_mpa <- sites %>%
 ## b. create a custom icon
 
 ```{r lobster-icon}
-
+lobster_icon <- makeIcon(
+  iconUrl = here::here("media", "lobster.png"),
+  iconWidth = 30, iconHeight = 30
+)
 ```
 
 ## c. create a map!
 
 ```{r leaflet-map}
+site_map <- leaflet() %>% 
+  
+  # adding base map tiles
+  addProviderTiles(providers$Esri.WorldImagery, group = "ESRI World Imagery") %>% 
+  addProviderTiles(providers$Esri.OceanBasemap, group = "ESRI Oceans") %>% 
+  
+  # mini map ----
+  addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>% 
+  
+  # setView over SB
+  setView(lng = -119.83, lat = 34.44, zoom = 9) %>% 
+  
+  # add MPA markers
+  addMarkers(data = mpa, group = "MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", mpa$site)) %>% 
+  
+  # add non-MPA markers
+  addMarkers(data = non_mpa, group = "non-MPA Sites",
+             icon = lobster_icon,
+             lng = ~lon, lat = ~lat,
+             popup = paste("Site Name:", non_mpa$site)) %>% 
+  
+  # add layers
+  addLayersControl(
+    baseGroups = c("ESRI World Imagery", "ESRI Oceans"),
+    overlayGroups = c("MPA Sites", "non-MPA Sites")
+  )
 
+site_map
 ```
 
 # 4. saving the html objects
