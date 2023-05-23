@@ -1,6 +1,6 @@
 ---
 title: "Integrating JavaScript Libraries into R for Dynamic Visualizations"
-author: "your name here"
+author: "An Bui"
 date: May 23, 2023
 execute:
   message: false
@@ -33,7 +33,7 @@ lobs_summary <- lobs %>%
   
   # calculate total lobster counts by protection status, site, & year (each point will represent lobster counts at a single site for each year from 2012-2018) ----
   group_by(protection_status, site, year) %>% 
-  count()
+  summarize(n = sum(total_count))
 ```
 
 # 2. `plotly`
@@ -80,7 +80,7 @@ static
 ## b. create an interactive plot
 
 ```{r basic-interactive-plot}
-
+ggplotly(static)
 ```
 
 ## c. create a better interactive plot
@@ -88,7 +88,13 @@ static
 ### i. create a marker
 
 ```{r summary-marker-df}
-
+lobs_summary_marker <- lobs_summary %>% 
+  
+  # create a new column called "marker" ----
+  mutate(marker = paste0("Site: ", site, "<br>",
+                         "Year: ", year, "<br>",
+                         "Status: ", protection_status, "<br>",
+                         "Lobster count: ", n))
 ```
 
 ### ii. make a new static plot with `text = marker` aesthetic argument
@@ -129,7 +135,26 @@ static_with_marker
 ### iii. create plot with markers
 
 ```{r better-interactive-plot}
+lobs_interactive <- ggplotly(static_with_marker, tooltip = "text") %>% 
+  
+  # adjust the layout using layout()
+  layout(
+    # global font option
+    font = list(family = "Times"),
+    
+    # adjust hover label (tooltip)
+    hoverlabel = list(
+      # edit the font: all goes into a list()
+      font = list(
+        family = "Times",
+        size = 13,
+        color = "#FFFFFF",
+        align = "left"
+      )
+    )
+  )
 
+lobs_interactive
 ```
 
 ### iv. doing things in `plot_ly`
@@ -143,13 +168,56 @@ static_with_marker
 ## a. create a basic interactive table
 
 ```{r basic-DT}
-
+datatable(data = lobs)
 ```
 
 ## b. customizing your DT
 
 ```{r advanced-DT}
+lobs_dt <- datatable(data = lobs,
+                     
+                     # make the column names informative ----
+                     colnames = c("Year", "Date", "Site", "Protection status", "Transect", "Replicate", "Size (mm)", "Count", "Latitude", "Longitude"),
+                     
+                     # ADD COLUMN FILTERS
+                     filter = "top",
+                     
+                     # put in extensions to datatable ----
+                     extensions = c("Buttons", "ColReorder"),
+                     
+                     
+                     # add in some options for our table
+                     options = list(
+                       # list 10 entries at once
+                       pageLength = 10,
+                       # automatically size columns
+                       autoWidth = TRUE,
+                       # highlight entries that match a search term
+                       searchHighlight = TRUE,
+                       
+                       # adjust the document object
+                       dom = "Bfrtip",
+                       # buttons options
+                       buttons = c("copy", "csv", "excel", "pdf", "print", "colvis"),
+                       # set colReorder to show up in table
+                       colReorder = TRUE
+                     )
+                     ) %>% 
+  
+  # style cells
+  formatStyle("site",
+              # set background color for the cell
+              backgroundColor = styleEqual(
+                levels = list("NAPL", "IVEE", "AQUE", "MOHK", "CARP"),
+                values = c("NAPL" = "#91B38A",
+                           "IVEE" = "#9565CC",
+                           "AQUE" = "#CCC065",
+                           "MOHK" = "#658ACC",
+                           "CARP" = "#CC6565")
+              )
+              )
 
+lobs_dt
 ```
 
 # 4. `leaflet`
